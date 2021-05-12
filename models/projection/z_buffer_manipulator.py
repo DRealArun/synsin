@@ -59,7 +59,7 @@ class PtsManipulator(nn.Module):
         cam1_X = K_inv.bmm(projected_coors)
 
         # Transform into world coordinates
-        RT = RT_cam2.bmm(RTinv_cam1)
+        RT = RTinv_cam2.bmm(RTinv_cam1)
 
         wrld_X = RT.bmm(cam1_X)
 
@@ -73,7 +73,7 @@ class PtsManipulator(nn.Module):
         zs = xy_proj[:, 2:3, :]
         zs[mask] = EPS
 
-        sampler = torch.cat((xy_proj[:, 0:2, :] / -zs, xy_proj[:, 2:3, :]), 1)
+        sampler = torch.cat((xy_proj[:, 0:2, :] / zs, xy_proj[:, 2:3, :]), 1)
         sampler[mask.repeat(1, 3, 1)] = -10
         # Flip the ys
         sampler = sampler * torch.Tensor([1, -1, -1]).unsqueeze(0).unsqueeze(

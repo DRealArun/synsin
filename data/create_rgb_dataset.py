@@ -28,8 +28,7 @@ def _load_datasets(config_keys, dataset, data_path, scenes_path, num_workers):
     datasets = []
     configs = []
 
-    num_episodes_per_worker = len(dataset.episodes) / float(num_workers)
-
+    num_episodes_per_worker = max(1, len(dataset.episodes) // float(num_workers))
     for i in range(0, min(len(dataset.episodes), num_workers)):
         config = make_config(*config_keys)
         config.defrost()
@@ -65,7 +64,7 @@ def make_config(
     config.TASK.NAME = "Nav-v0"
     config.TASK.MEASUREMENTS = []
     config.DATASET.SPLIT = split
-    config.DATASET.POINTNAVV1.DATA_PATH = data_path
+    config.DATASET.DATA_PATH = data_path
     config.DATASET.SCENES_DIR = scenes_dir
     config.HEIGHT = resolution
     config.WIDTH = resolution
@@ -128,24 +127,24 @@ class RandomImageGenerator(object):
             os.makedirs(data_dir)
         data_path = os.path.join(data_dir, "dataset_one_ep_per_scene.json.gz")
         # Creates a dataset where each episode is a random spawn point in each scene.
-        print("One ep per scene", flush=True)
-        if not (os.path.exists(data_path)):
-            print("Creating dataset...", flush=True)
-            dataset = make_dataset(config.DATASET.TYPE, config=config.DATASET)
-            # Get one episode per scene in dataset
-            scene_episodes = {}
-            for episode in tqdm.tqdm(dataset.episodes):
-                if episode.scene_id not in scene_episodes:
-                    scene_episodes[episode.scene_id] = episode
-
-            scene_episodes = list(scene_episodes.values())
-            dataset.episodes = scene_episodes
-            if not os.path.exists(data_path):
-                # Multiproc do check again before write.
-                json = dataset.to_json().encode("utf-8")
-                with gzip.GzipFile(data_path, "w") as fout:
-                    fout.write(json)
-            print("Finished dataset...", flush=True)
+        # print("One ep per scene", flush=True)
+        # if not (os.path.exists(data_path)):
+        #     print("Creating dataset...", flush=True)
+        #     dataset = make_dataset(config.DATASET.TYPE, config=config.DATASET)
+        #     # Get one episode per scene in dataset
+        #     scene_episodes = {}
+        #     for episode in tqdm.tqdm(dataset.episodes):
+        #         if episode.scene_id not in scene_episodes:
+        #             scene_episodes[episode.scene_id] = episode
+        #
+        #     scene_episodes = list(scene_episodes.values())
+        #     dataset.episodes = scene_episodes
+        #     if not os.path.exists(data_path):
+        #         # Multiproc do check again before write.
+        #         json = dataset.to_json().encode("utf-8")
+        #         with gzip.GzipFile(data_path, "w") as fout:
+        #             fout.write(json)
+        #     print("Finished dataset...", flush=True)
 
         # Load in data and update the location to the proper location (else
         # get a weird, uninformative, error -- Affine2Dtransform())

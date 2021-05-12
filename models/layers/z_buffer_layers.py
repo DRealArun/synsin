@@ -68,8 +68,8 @@ class RasterizePointsXYsBlending(nn.Module):
         assert pts3D.size(2) == 3
         assert pts3D.size(1) == src.size(2)  
 
-        pts3D[:,:,1] = - pts3D[:,:,1]
-        pts3D[:,:,0] = - pts3D[:,:,0]
+        pts3D[:,:,1] = pts3D[:,:,1]
+        pts3D[:,:,0] = pts3D[:,:,0]
 
         # Add on the default feature to the end of the src
         # src = torch.cat((src, self.default_feature.repeat(bs, 1, 1)), 2)
