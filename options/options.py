@@ -73,6 +73,14 @@ def get_dataset(opt):
 
         return KITTIDataLoader
 
+    elif opt.dataset == 'blender':
+        opt.train_data_path = (
+            '/home/arun/Desktop/Workspace/View_Synthesis/blender_utilities/frames/Mock_scene_setup'
+        )
+        from data.blender import BlenderDataLoader
+
+        return BlenderDataLoader
+
     from data.habitat_data import HabitatImageGenerator as Dataset
 
     return Dataset
